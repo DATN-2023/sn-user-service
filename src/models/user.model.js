@@ -3,8 +3,8 @@ module.exports = (joi, mongoose, { joi2MongoSchema, schemas }) => {
   const userJoi = joi.object({
     name: joi.string().required(),
     avatar: joi.string().required(),
-    email: joi.string().required(),
-    phone: joi.string().required(),
+    email: joi.string().default('').allow(''),
+    phone: joi.string().default('').allow(''),
     place: joi.string().default('').allow(''),
     banner: joi.string().default('').allow(''),
     feedTotal: joi.number().default(0),

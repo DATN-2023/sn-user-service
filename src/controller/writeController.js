@@ -11,11 +11,11 @@ module.exports = (container) => {
   const { userRepo, friendRepo } = container.resolve('repo')
   const addUser = async (req, res) => {
     try {
-      const thoauoc = req.body
+      const user = req.body
       const {
         error,
         value
-      } = await schemaValidator(thoauoc, 'User')
+      } = await schemaValidator(user, 'User')
       if (error) {
         return res.status(httpCode.BAD_REQUEST).send({ msg: error.message })
       }

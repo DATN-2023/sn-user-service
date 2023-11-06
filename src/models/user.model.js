@@ -1,4 +1,5 @@
 module.exports = (joi, mongoose, { joi2MongoSchema, schemas }) => {
+  const { ObjectId } = mongoose.Types
   const userJoi = joi.object({
     name: joi.string().required(),
     avatar: joi.string().required(),
@@ -9,9 +10,15 @@ module.exports = (joi, mongoose, { joi2MongoSchema, schemas }) => {
     feedTotal: joi.number().default(0),
     friendTotal: joi.number().default(0),
     description: joi.string().default(),
-    dob: joi.number().required()
+    dob: joi.number().required(),
+    customerId: joi.string().required()
   })
-  const userSchema = joi2MongoSchema(userJoi, {}, {
+  const userSchema = joi2MongoSchema(userJoi, {
+    customerId: {
+      type: ObjectId,
+      unique: true
+    }
+  }, {
     createdAt: {
       type: Number,
       default: () => Math.floor(Date.now() / 1000)

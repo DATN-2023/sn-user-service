@@ -9,7 +9,7 @@ module.exports = (joi, mongoose, { joi2MongoSchema, schemas }) => {
     banner: joi.string().default('').allow(''),
     feedTotal: joi.number().default(0),
     friendTotal: joi.number().default(0),
-    description: joi.string().default(),
+    description: joi.string().default(''),
     dob: joi.number().required(),
     customerId: joi.string().required()
   })

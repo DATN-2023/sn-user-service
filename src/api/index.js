@@ -1,6 +1,8 @@
 module.exports = (app, container) => {
+  const { verifyInternalToken } = container.resolve('middleware')
   require('./userApi')(app, container)
   require('./friendApi')(app, container)
-  require('./sdpApi')(app, container)
-  require('./cdcApi')(app, container)
+  app.use(verifyInternalToken)
+  require('./readApi')(app, container)
+  require('./writeApi')(app, container)
 }

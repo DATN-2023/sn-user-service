@@ -1,5 +1,5 @@
 const serverSettings = {
-  port: process.env.PORT || 8004,
+  port: process.env.PORT || 8006,
   basePath: process.env.BASE_PATH || ''
 }
 

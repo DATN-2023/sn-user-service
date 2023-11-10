@@ -13,7 +13,7 @@ module.exports = (container) => {
     try {
       const { id } = req.params
       if (id) {
-        const user = await userRepo.getUserById(id)
+        const user = await userRepo.findOne({ customerId: id })
         res.status(httpCode.SUCCESS).send(user)
       } else {
         res.status(httpCode.BAD_REQUEST).end()

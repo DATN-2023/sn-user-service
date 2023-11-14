@@ -15,7 +15,7 @@ module.exports = (container) => {
       const { id } = req.params
       const { userId } = req.query
       if (id) {
-        const user = await userRepo.findOne({ customerId: id })
+        const user = await userRepo.findOne({ customerId: new ObjectId(id) })
         const friend = await friendRepo.findOne({ $or: [{ sender: new ObjectId(userId) }, { receiver: new ObjectId(userId) }] })
         user.friendStatus = friend ? friend.type : friendRequestConfig.UNFRIEND
         res.status(httpCode.SUCCESS).send(user)

@@ -36,7 +36,7 @@ module.exports = container => {
     return User.deleteMany(pipe)
   }
   const findOne = (pipe) => {
-    return User.findOne(pipe)
+    return User.findOne(pipe).lean()
   }
   return {
     getUserNoPaging,

@@ -64,11 +64,11 @@ module.exports = (container) => {
   }
   const addFriend = async (req, res) => {
     try {
-      const thoauoc = req.body
+      const friend = req.body
       const {
         error,
         value
-      } = await schemaValidator(thoauoc, 'Friend')
+      } = await schemaValidator(friend, 'Friend')
       if (error) {
         return res.status(httpCode.BAD_REQUEST).send({ msg: error.message })
       }

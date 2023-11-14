@@ -35,6 +35,9 @@ module.exports = container => {
   const removeFriend = (pipe) => {
     return Friend.deleteMany(pipe)
   }
+  const findOne = (pipe) => {
+    return Friend.findOne(pipe)
+  }
   return {
     getFriendNoPaging,
     removeFriend,
@@ -45,6 +48,7 @@ module.exports = container => {
     updateFriend,
     checkIdExist,
     getCount,
-    getFriend
+    getFriend,
+    findOne
   }
 }

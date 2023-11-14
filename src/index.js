@@ -8,6 +8,11 @@ const models = require('./models')
 const controller = require('./controller')
 const { connect } = require('./database')
 const repo = require('./repo')
+const {
+  Subscriber,
+  createChannel
+} = require('./queue')
+const listener = require('./listener')
 const EventEmitter = require('events').EventEmitter
 const mediator = new EventEmitter()
 logger.d(`${name} Service`)
@@ -17,7 +22,10 @@ mediator.once('di.ready', container => {
   container.registerValue('middleware', middleware)
   container.registerValue('logger', logger)
   container.registerValue('mediator', mediator)
-  mediator.once('db.ready', db => {
+  mediator.once('db.ready', async db => {
+    const channel = await createChannel(config.rabbitConfig)
+    const subscriber = new Subscriber(channel, config.workerConfig.queueName, config.workerConfig.exchange, config.workerConfig.exchangeType)
+    container.registerValue('subscriber', subscriber)
     logger.d('db.ready, starting server')
     container.registerValue('db', db)
     container.registerValue('models', models(container))
@@ -28,6 +36,7 @@ mediator.once('di.ready', container => {
     server.start(container).then(app => {
       logger.d('Server started at port ', app.address().port)
     })
+    listener(container)
   })
   connect(container, mediator)
 })

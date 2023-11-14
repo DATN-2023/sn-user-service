@@ -10,7 +10,7 @@ module.exports = (joi, mongoose, { joi2MongoSchema, schemas }) => {
     feedTotal: joi.number().default(0),
     friendTotal: joi.number().default(0),
     description: joi.string().default('').allow(''),
-    dob: joi.number().required(),
+    dob: joi.number().default(0),
     customerId: joi.string().required()
   })
   const userSchema = joi2MongoSchema(userJoi, {

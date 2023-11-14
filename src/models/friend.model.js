@@ -33,6 +33,9 @@ module.exports = (joi, mongoose, { joi2MongoSchema, schemas }) => {
   }) => {
     return friendJoi.validate(obj, config)
   }
+  friendSchema.statics.getConfig = () => {
+    return { friendRequestConfig }
+  }
   friendSchema.index({ sender: 1, receiver: 1 }, { unique: 1 })
   const friendModel = mongoose.model('Friend', friendSchema)
   friendModel.syncIndexes()

@@ -7,13 +7,17 @@ module.exports = (container) => {
       User, Friend
     }
   } = container.resolve('models')
+  const { friendRequestConfig } = Friend.getConfig()
   const { httpCode, serverHelper } = container.resolve('config')
   const { userRepo, friendRepo } = container.resolve('repo')
   const getUserById = async (req, res) => {
     try {
       const { id } = req.params
+      const { userId } = req.query
       if (id) {
         const user = await userRepo.findOne({ customerId: id })
+        const friend = await friendRepo.findOne({ $or: [{ sender: new ObjectId(userId) }, { receiver: new ObjectId(userId) }] })
+        user.friendStatus = friend ? friend.type : friendRequestConfig.UNFRIEND
         res.status(httpCode.SUCCESS).send(user)
       } else {
         res.status(httpCode.BAD_REQUEST).end()

@@ -1,14 +1,8 @@
 module.exports = (joi, mongoose, { joi2MongoSchema, schemas }) => {
   const { ObjectId } = mongoose.Types
-  const friendRequestConfig = {
-    PENDING: 1,
-    ACCEPT: 2,
-    UNFRIEND: 3
-  }
   const friendJoi = joi.object({
     sender: joi.string().required(),
-    receiver: joi.string().required(),
-    type: joi.number().valid(...Object.values(friendRequestConfig)).required(),
+    receiver: joi.string().required()
   })
   const friendSchema = joi2MongoSchema(friendJoi, {}, {
     createdAt: {
@@ -32,9 +26,6 @@ module.exports = (joi, mongoose, { joi2MongoSchema, schemas }) => {
     stripUnknown: true
   }) => {
     return friendJoi.validate(obj, config)
-  }
-  friendSchema.statics.getConfig = () => {
-    return { friendRequestConfig }
   }
   friendSchema.index({ sender: 1, receiver: 1 }, { unique: 1 })
   const friendModel = mongoose.model('Friend', friendSchema)

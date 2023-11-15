@@ -8,7 +8,8 @@ module.exports = (joi, mongoose, { joi2MongoSchema, schemas }) => {
     place: joi.string().default('').allow(''),
     banner: joi.string().default('').allow(''),
     feedTotal: joi.number().default(0),
-    friendTotal: joi.number().default(0),
+    followerTotal: joi.number().default(0),
+    followeeTotal: joi.number().default(0),
     description: joi.string().default('').allow(''),
     dob: joi.number().default(0),
     customerId: joi.string().required()

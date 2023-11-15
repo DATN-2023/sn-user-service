@@ -38,6 +38,9 @@ module.exports = container => {
   const findOne = (pipe) => {
     return Friend.findOne(pipe)
   }
+  const findOneAndRemove = (pipe) => {
+    return Friend.where().findOneAndRemove(pipe)
+  }
   return {
     getFriendNoPaging,
     removeFriend,
@@ -49,6 +52,7 @@ module.exports = container => {
     checkIdExist,
     getCount,
     getFriend,
-    findOne
+    findOne,
+    findOneAndRemove
   }
 }

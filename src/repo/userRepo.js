@@ -38,6 +38,9 @@ module.exports = container => {
   const findOne = (pipe) => {
     return User.findOne(pipe).lean()
   }
+  const findOneAndUpdate = (query, update) => {
+    return User.findOneAndUpdate(query, update)
+  }
   return {
     getUserNoPaging,
     removeUser,
@@ -49,6 +52,7 @@ module.exports = container => {
     checkIdExist,
     getCount,
     getUser,
-    findOne
+    findOne,
+    findOneAndUpdate
   }
 }

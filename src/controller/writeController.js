@@ -4,7 +4,7 @@ module.exports = (container) => {
   const {
     schemaValidator,
     schemas: {
-      User
+      Friend
     }
   } = container.resolve('models')
   const { httpCode, serverHelper } = container.resolve('config')
@@ -73,6 +73,8 @@ module.exports = (container) => {
         return res.status(httpCode.BAD_REQUEST).send({ msg: error.message })
       }
       const sp = await friendRepo.addFriend(value)
+      await userRepo.findOneAndUpdate({ customerId: new ObjectId(sp.sender.toString()) }, { $inc: { followeeTotal: 1 } })
+      await userRepo.findOneAndUpdate({ customerId: new ObjectId(sp.receiver.toString()) }, { $inc: { followerTotal: 1 } })
       res.status(httpCode.CREATED).send(sp)
     } catch (e) {
       logger.e(e)
@@ -83,7 +85,9 @@ module.exports = (container) => {
     try {
       const { id } = req.params
       if (id) {
-        await friendRepo.deleteFriend(id)
+        const sp = await friendRepo.findOneAndRemove({ _id: new ObjectId(id) })
+        await userRepo.findOneAndUpdate({ customerId: new ObjectId(sp.sender.toString()) }, { $inc: { followeeTotal: -1 } })
+        await userRepo.findOneAndUpdate({ customerId: new ObjectId(sp.receiver.toString()) }, { $inc: { followerTotal: -1 } })
         res.status(httpCode.SUCCESS).send({ ok: true })
       } else {
         res.status(httpCode.BAD_REQUEST).end()

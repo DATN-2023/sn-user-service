@@ -5,4 +5,5 @@ module.exports = (app, container) => {
   app.use(verifyInternalToken)
   require('./readApi')(app, container)
   require('./writeApi')(app, container)
+  require('./internalApi')(app, container)
 }

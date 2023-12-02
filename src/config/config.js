@@ -61,4 +61,9 @@ const workerConfig = {
   exchange: process.env.EXCHANGE || 'sn:create-user',
   exchangeType: process.env.EXCHANGE_TYPE || 'direct'
 }
-module.exports = { dbSettings, serverHelper: serverHelper(), serverSettings, httpCode, rabbitConfig, workerConfig }
+const workerConfigNoti = {
+  queueName: process.env.QUEUE_NAME || 'sn.notification',
+  exchange: process.env.EXCHANGE || 'sn:notification',
+  exchangeType: process.env.EXCHANGE_TYPE || 'direct'
+}
+module.exports = { dbSettings, serverHelper: serverHelper(), serverSettings, httpCode, rabbitConfig, workerConfig, workerConfigNoti }

@@ -44,9 +44,9 @@ module.exports = (container) => {
       const search = { ...req.query }
       if (ids) {
         if (ids.constructor === Array) {
-          search.id = { $in: ids }
+          search.id = { $in: ids.map(id => new ObjectId(id)) }
         } else if (ids.constructor === String) {
-          search.id = { $in: ids.split(',') }
+          search.id = { $in: ids.split(',').map(id => new ObjectId(id)) }
         }
       }
       delete search.ids
@@ -153,6 +153,6 @@ module.exports = (container) => {
     getUser,
     getUserById,
     getFriend,
-    getFriendById,
+    getFriendById
   }
 }

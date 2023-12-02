@@ -10,7 +10,8 @@ const { connect } = require('./database')
 const repo = require('./repo')
 const {
   Subscriber,
-  createChannel
+  createChannel,
+    Publisher
 } = require('./queue')
 const listener = require('./listener')
 const EventEmitter = require('events').EventEmitter
@@ -24,8 +25,11 @@ mediator.once('di.ready', container => {
   container.registerValue('mediator', mediator)
   mediator.once('db.ready', async db => {
     const channel = await createChannel(config.rabbitConfig)
+    const channel1 = await createChannel(config.rabbitConfig)
     const subscriber = new Subscriber(channel, config.workerConfig.queueName, config.workerConfig.exchange, config.workerConfig.exchangeType)
     container.registerValue('subscriber', subscriber)
+    const publisher = new Publisher(channel1, config.workerConfigNoti.exchange, config.workerConfigNoti.exchangeType)
+    container.registerValue('publisher', publisher)
     logger.d('db.ready, starting server')
     container.registerValue('db', db)
     container.registerValue('models', models(container))

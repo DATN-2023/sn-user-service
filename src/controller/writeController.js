@@ -7,8 +7,18 @@ module.exports = (container) => {
       Friend
     }
   } = container.resolve('models')
-  const { httpCode, serverHelper } = container.resolve('config')
+  const { httpCode, serverHelper, workerConfigNoti } = container.resolve('config')
   const { userRepo, friendRepo } = container.resolve('repo')
+  const publisher = container.resolve('publisher')
+  const typeConfig = {
+    COMMENT: 1,
+    REACT: 2,
+    POST: 3,
+    SHARE: 4,
+    FOLLOW: 5,
+    UNREACT: 6,
+    UNFOLLOW: 7
+  }
   const addUser = async (req, res) => {
     try {
       const user = req.body
@@ -75,6 +85,12 @@ module.exports = (container) => {
       const sp = await friendRepo.addFriend(value)
       await userRepo.findOneAndUpdate({ customerId: new ObjectId(sp.sender.toString()) }, { $inc: { followeeTotal: 1 } })
       await userRepo.findOneAndUpdate({ customerId: new ObjectId(sp.receiver.toString()) }, { $inc: { followerTotal: 1 } })
+      const payload = {
+        user: sp.sender.toString(),
+        alertUser: sp.receiver.toString(),
+        type: typeConfig.FOLLOW
+      }
+      await publisher.sendToQueue(payload, workerConfigNoti.queueName)
       res.status(httpCode.CREATED).send(sp)
     } catch (e) {
       logger.e(e)
@@ -88,6 +104,12 @@ module.exports = (container) => {
         const sp = await friendRepo.findOneAndRemove({ _id: new ObjectId(id) })
         await userRepo.findOneAndUpdate({ customerId: new ObjectId(sp.sender.toString()) }, { $inc: { followeeTotal: -1 } })
         await userRepo.findOneAndUpdate({ customerId: new ObjectId(sp.receiver.toString()) }, { $inc: { followerTotal: -1 } })
+        const payload = {
+          user: sp.sender.toString(),
+          alertUser: sp.receiver.toString(),
+          type: typeConfig.UNFOLLOW
+        }
+        await publisher.sendToQueue(payload, workerConfigNoti.queueName)
         res.status(httpCode.SUCCESS).send({ ok: true })
       } else {
         res.status(httpCode.BAD_REQUEST).end()

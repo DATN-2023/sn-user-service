@@ -42,23 +42,23 @@ module.exports = (container) => {
       sort = +sort === 0 ? { _id: 1 } : +sort || { _id: -1 }
       const skip = (page - 1) * perPage
       const search = { ...req.query }
+      const pipe = {}
       if (ids) {
         if (ids.constructor === Array) {
-          search.id = { $in: ids.map(id => new ObjectId(id)) }
+          pipe.customerId = { $in: ids.map(id => new ObjectId(id)) }
         } else if (ids.constructor === String) {
-          search.id = { $in: ids.split(',').map(id => new ObjectId(id)) }
+          pipe.customerId = { $in: ids.split(',').map(id => new ObjectId(id)) }
         }
       }
       delete search.ids
       delete search.page
       delete search.perPage
       delete search.sort
-      const pipe = {}
       Object.keys(search).forEach(i => {
         const vl = search[i]
         const pathType = (User.schema.path(i) || {}).instance || ''
         if (pathType.toLowerCase() === 'objectid') {
-          pipe[i] = ObjectId(vl)
+          pipe[i] = new ObjectId(vl)
         } else if (pathType === 'Number') {
           pipe[i] = +vl
         } else if (pathType === 'String' && vl.constructor === String) {
@@ -77,6 +77,26 @@ module.exports = (container) => {
         total,
         page
       })
+    } catch (e) {
+      logger.e(e)
+      res.status(httpCode.UNKNOWN_ERROR).send({ ok: false })
+    }
+  }
+  const getUserByIds = async (req, res) => {
+    try {
+      let {
+        ids
+      } = req.query
+      const pipe = {}
+      if (ids) {
+        if (ids.constructor === Array) {
+          pipe.customerId = { $in: ids.map(id => new ObjectId(id)) }
+        } else if (ids.constructor === String) {
+          pipe.customerId = { $in: ids.split(',').map(id => new ObjectId(id)) }
+        }
+      }
+      const data = await userRepo.getUserNoPaging(pipe)
+      res.status(httpCode.SUCCESS).send(data)
     } catch (e) {
       logger.e(e)
       res.status(httpCode.UNKNOWN_ERROR).send({ ok: false })
@@ -153,6 +173,7 @@ module.exports = (container) => {
     getUser,
     getUserById,
     getFriend,
-    getFriendById
+    getFriendById,
+    getUserByIds
   }
 }

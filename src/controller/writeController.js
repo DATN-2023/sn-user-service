@@ -7,8 +7,15 @@ module.exports = (container) => {
       Friend
     }
   } = container.resolve('models')
-  const { httpCode, serverHelper, workerConfigNoti } = container.resolve('config')
-  const { userRepo, friendRepo } = container.resolve('repo')
+  const {
+    httpCode,
+    serverHelper,
+    workerConfigNoti
+  } = container.resolve('config')
+  const {
+    userRepo,
+    friendRepo
+  } = container.resolve('repo')
   const publisher = container.resolve('publisher')
   const typeConfig = {
     COMMENT: 1,
@@ -64,6 +71,25 @@ module.exports = (container) => {
       if (id && user) {
         const sp = await userRepo.updateUser(id, value)
         res.status(httpCode.SUCCESS).send(sp)
+      } else {
+        res.status(httpCode.BAD_REQUEST).end()
+      }
+    } catch (e) {
+      logger.e(e)
+      res.status(httpCode.UNKNOWN_ERROR).send({ ok: false })
+    }
+  }
+  const updateTotalFeed = async (req, res) => {
+    try {
+      const { id } = req.params
+      const { isAdd } = req.body
+      if (id) {
+        if (isAdd) {
+          await userRepo.findOneAndUpdate({ customerId: new ObjectId(id) }, { $inc: { feedTotal: 1 } })
+        } else {
+          await userRepo.findOneAndUpdate({ customerId: new ObjectId(id) }, { $inc: { feedTotal: -1 } })
+        }
+        res.status(httpCode.SUCCESS).send({ ok: true })
       } else {
         res.status(httpCode.BAD_REQUEST).end()
       }
@@ -148,6 +174,7 @@ module.exports = (container) => {
     deleteUser,
     addFriend,
     deleteFriend,
-    updateFriend
+    updateFriend,
+    updateTotalFeed
   }
 }
